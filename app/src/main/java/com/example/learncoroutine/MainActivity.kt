@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
             LearnCoroutineTheme {
 
                 fst_screen(viewmodelfstScreen = ViewModelFst_screen())
+
             }
         }
 
