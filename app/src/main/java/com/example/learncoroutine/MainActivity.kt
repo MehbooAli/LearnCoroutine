@@ -26,6 +26,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 
+
+
 class MainActivity : ComponentActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +35,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LearnCoroutineTheme {
+
+
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                    Greeting(
+//                        name = "Android",
+//                        modifier = Modifier.padding(innerPadding)
+//                    )
                 fst_screen(viewmodelfstScreen = ViewModelFst_screen())
 //                }
             }
