@@ -24,8 +24,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LearnCoroutineTheme {
-                fst_screen(viewmodelfstScreen = ViewModelFst_screen())
 
+                fst_screen(viewmodelfstScreen = ViewModelFst_screen())
             }
         }
 
