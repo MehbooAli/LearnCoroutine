@@ -5,13 +5,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.example.learncoroutine.ui.theme.LearnCoroutineTheme
 import kotlinx.coroutines.CoroutineScope
@@ -20,11 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.yield
 
 class MainActivity : ComponentActivity() {
     @OptIn(DelicateCoroutinesApi::class)
@@ -33,13 +24,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LearnCoroutineTheme {
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Greeting(
-//                        name = "Android",
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
                 fst_screen(viewmodelfstScreen = ViewModelFst_screen())
-//                }
+
             }
         }
 
@@ -62,6 +48,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun DisIoThread() {
+
         CoroutineScope(Dispatchers.Main).launch {
             Log.d("MainActivity", "Coroutine main : ${Thread.currentThread().name}")
         }

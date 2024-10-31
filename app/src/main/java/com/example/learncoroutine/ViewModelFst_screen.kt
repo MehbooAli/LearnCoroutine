@@ -1,17 +1,14 @@
 package com.example.learncoroutine
 
-import android.provider.ContactsContract.Data
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
-import kotlin.math.log
 
 class ViewModelFst_screen() : ViewModel() {
     val a = "Hello word"
