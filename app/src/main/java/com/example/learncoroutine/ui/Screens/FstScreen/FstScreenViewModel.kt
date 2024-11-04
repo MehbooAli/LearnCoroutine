@@ -1,35 +1,52 @@
-package com.example.learncoroutine
+package com.example.learncoroutine.ui.Screens.FstScreen
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.learncoroutine.Data.Api.RetrofitInstance
+import com.example.learncoroutine.Data.Model.PostModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
+import javax.inject.Inject
 
-class ViewModelFst_screen() : ViewModel() {
+//class ViewModelFst_screen(private val navController: NavController) : ViewModel() {
+
+@HiltViewModel
+class FstScreenViewModel @Inject constructor() : ViewModel() {
+
     val a = "Hello word"
+    var fstString = mutableStateOf("Hi")
+    var secString = mutableStateOf("")
+
+    init {
+        printFstString()
+        printSecString()
+    }
 
     fun doWork() {
         // Just one method for launch coroutine viewModelScope
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             delay(5000)
             Log.d("ViewModelFst", "Coroutine Scope do work fun:  ${Thread.currentThread().name}")
         }
     }
 
     fun CoroutineTestFun() {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             Log.d("ViewModelFst", "Coroutine Scope Dispatcher Main ${Thread.currentThread().name}")
         }
 
     }
 
     fun yieldLaunch() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Unconfined) {
             testFunYield()
         }
     }
@@ -82,7 +99,7 @@ class ViewModelFst_screen() : ViewModel() {
     }
 
     fun printFbInstagramFol() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             printFbInstagramFollower()
         }
     }
@@ -94,8 +111,8 @@ class ViewModelFst_screen() : ViewModel() {
         var instafol = 0
 
         CoroutineScope(Dispatchers.IO).launch {
-            val fb = async {   getFacebookFollower()}
-            val insta = async {  getInstagramFollowers()}
+            val fb = async { getFacebookFollower() }
+            val insta = async { getInstagramFollowers() }
 
             Log.d("ViewModelFst", "Get Data: ${fb.await()} and instagram: ${insta.await()}")
         }
@@ -112,7 +129,6 @@ class ViewModelFst_screen() : ViewModel() {
         instagram.join()
         Log.d("ViewModelFst", "print fb and instagram: ${fbfol} followers: ${instafol}")
 
-
     }
 
     private suspend fun getFacebookFollower(): Int {
@@ -124,4 +140,32 @@ class ViewModelFst_screen() : ViewModel() {
         delay(1000)
         return 44
     }
+
+    private suspend fun getLInkdinFol() {
+        delay(2000)
+
+    }
+
+    fun printFstString() {
+        viewModelScope.launch {
+            fstString.value = getFstString()
+        }
+    }
+
+    private suspend fun getFstString(): String {
+        delay(5000)
+        return "This is first String from Coroutine."
+    }
+
+    private fun printSecString() {
+        viewModelScope.launch {
+            secString.value =  getSecString()
+        }
+    }
+
+    private suspend fun getSecString(): String{
+        delay(3000)
+        return "This is second String form Coroutine."
+    }
+
 }

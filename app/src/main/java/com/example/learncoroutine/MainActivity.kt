@@ -6,7 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
-import com.example.learncoroutine.ui.theme.LearnCoroutineTheme
+import androidx.navigation.compose.rememberNavController
+import com.example.learncoroutine.Navigation.NavHostGraph
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -16,28 +18,36 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 
+@AndroidEntryPoint
+@Serializable
 class MainActivity : ComponentActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            LearnCoroutineTheme {
-                fst_screen(viewmodelfstScreen = ViewModelFst_screen())
-            }
+            val navController = rememberNavController()
+            NavHostGraph(navController)
         }
 
         // delay with only pause the current coroutine and it will not block the whole thread
         // Run Coroutine
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.Unconfined) {
             delay(3000)
             Log.d("MainActivity", "Coroutine says hell from thread ${Thread.currentThread().name}")
             Log.d("MainActivity", "Coroutine says hell from thread ${doNetworkCall()}")
             DisIoThread()
         }
         Log.d("MainActivity", "Hello from thread ${Thread.currentThread().name}")
+        lifecycleScope.launch(Dispatchers.Unconfined) {
+            execute()
+        }
 
+        lifecycleScope.launch {
+            runBlockingExecute()
+        }
     }
 
     private suspend fun doNetworkCall(): String {
@@ -48,14 +58,14 @@ class MainActivity : ComponentActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     private fun DisIoThread() {
 
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.Unconfined).launch {
             Log.d("MainActivity", "Coroutine main : ${Thread.currentThread().name}")
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Unconfined).launch {
             Log.d("MainActivity", "Coroutine Default io : ${Thread.currentThread().name}")
         }
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.Unconfined).launch {
             Log.d("MainActivity", " Coroutine Dispatcher default : ${Thread.currentThread().name}")
 
         }
@@ -67,7 +77,7 @@ class MainActivity : ComponentActivity() {
         }
 
 //        Using GlobalScope for Application-Wide Tasks (Use Cautiously)
-        GlobalScope.launch(Dispatchers.Main) {
+        GlobalScope.launch(Dispatchers.Unconfined) {
             Log.d("MainActivity", "Global Scope Main : ${Thread.currentThread().name}")
         }
 
@@ -75,11 +85,11 @@ class MainActivity : ComponentActivity() {
             Log.d("MainActivity", "MainScople Default : ${Thread.currentThread().name}")
         }
 
-        GlobalScope.launch(Dispatchers.IO) {
+        GlobalScope.launch(Dispatchers.Unconfined) {
             Log.d("MainActivity", "GlobalScope Dispatcher Io : ${Thread.currentThread().name}")
         }
 
-        GlobalScope.launch(Dispatchers.Default) {
+        GlobalScope.launch(Dispatchers.Unconfined) {
             Log.d(
                 "MainActivity",
                 "Global Scope Dispatcher Default : ${Thread.currentThread().name}"
@@ -91,22 +101,11 @@ class MainActivity : ComponentActivity() {
             Log.d("MainActivity", "GlobalScope Dispatcher Io : ${Thread.currentThread().name}")
         }
 
-        lifecycleScope.launch {
-            execute()
-        }
-
-        MainScope().launch {
-            executeTask()
-        }
-
-        lifecycleScope.launch {
-            runBlockingExecute()
-        }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     private suspend fun execute() {
-        val parentJob = GlobalScope.launch(Dispatchers.Main) {
+        val parentJob = GlobalScope.launch {
 
             Log.d("MainActivity", "Parent Started")
 
@@ -145,7 +144,7 @@ class MainActivity : ComponentActivity() {
     // In Simple work runBlocking when coroutine all code execute then application is closed other vise not
     private suspend fun runBlockingExecute() {
         runBlocking {
-            launch {
+            launch(Dispatchers.IO) {
                 delay(6000)
                 Log.d("MainActivity", "runBlocking fun Execute: ${Thread.currentThread().name}")
             }
