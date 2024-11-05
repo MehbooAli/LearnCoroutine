@@ -10,9 +10,11 @@ import com.example.learncoroutine.Data.Model.PostModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import javax.inject.Inject
 
@@ -20,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FstScreenViewModel @Inject constructor() : ViewModel() {
+
 
     val a = "Hello word"
     var fstString = mutableStateOf("Hi")
@@ -159,13 +162,51 @@ class FstScreenViewModel @Inject constructor() : ViewModel() {
 
     private fun printSecString() {
         viewModelScope.launch {
-            secString.value =  getSecString()
+            secString.value = getSecString()
         }
     }
 
-    private suspend fun getSecString(): String{
+    private suspend fun getSecString(): String {
         delay(3000)
         return "This is second String form Coroutine."
+    }
+
+    private fun executeLongRunningTaskFst() {
+        for (i in 1..100000000) {
+
+        }
+    }
+
+    fun doActionLongRunningTaskFst() {
+        Thread {
+            executeLongRunningTaskFst()
+            Log.d(
+                "ViewModelFst",
+                "Create default thread for running long running task: ${Thread.currentThread().name}"
+            )
+        }.start()
+    }
+
+
+    private fun executeLongRunningTaskSec() {
+        for (i in 1..10000000000) {
+
+        }
+    }
+
+    fun doActionLongRunningTaskSec() {
+        executeLongRunningTaskSec()
+    }
+
+    fun runBlockFun() {
+        runBlocking {
+            GlobalScope.launch {
+                delay(5000)
+                Log.d("ViewModelFst", "Run Blocking Function: ${Thread.currentThread().name}")
+            }
+            delay(1000)
+            Log.d("ViewModelFst", "End Function of Run Blocking: ${Thread.currentThread().name}")
+        }
     }
 
 }

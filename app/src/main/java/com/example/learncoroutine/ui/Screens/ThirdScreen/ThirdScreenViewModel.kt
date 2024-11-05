@@ -9,11 +9,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ThirdScreenViewModel @Inject constructor() : ViewModel() {
-
     var a = mutableStateOf("Hi")
     var b = mutableStateOf("Hello")
 
@@ -21,12 +22,18 @@ class ThirdScreenViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             a.value = executeFirstFunction()
             b.value = executeSecondFunction()
+            runBlocking {
+                Log.d("ThirdScreenViewModel", "Test function ${Thread.currentThread().name}")
+            }
         }
 
         viewModelScope.launch {
             executeThirdFunction()
         }
 
+        viewModelScope.launch {
+            executeFourthFunction()
+        }
     }
 
     private suspend fun executeFirstFunction(): String = withContext(Dispatchers.IO) {
@@ -45,10 +52,43 @@ class ThirdScreenViewModel @Inject constructor() : ViewModel() {
 
     @OptIn(DelicateCoroutinesApi::class)
     private suspend fun executeThirdFunction() {
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.Unconfined) {
             Log.d("ThirdScreenViewModel", "Third function: ${Thread.currentThread().name}")
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
+    private suspend fun executeFourthFunction() {
+        GlobalScope.launch(newSingleThreadContext("Testing Thread")) {
+            Log.d(
+                "ThirdScreenViewModel",
+                "Fourth function made own thread: ${Thread.currentThread().name}"
+            )
+        }
+    }
+
+    fun executeRunBlocking() {
+        Log.d("ThirdScreenViewModel", "before runBlocking")
+        runBlocking {
+            Log.d("ThirdScreenViewModel", "start runBlocking")
+            delay(5000)
+            Log.d("ThirdScreenViewModel", "End runBlocking")
+        }
+        Log.d("ThirdScreenViewModel", "After runBlocking")
+    }
+
+    fun executeWithContext() {
+        Log.d("ThirdScreenViewModel", "Before With Context")
+
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                Log.d("ThirdScreenViewModel", "start With Context")
+                delay(5000)
+                Log.d("ThirdScreenViewModel", "End With Context")
+            }
+        }
+
+        Log.d("ThirdScreenViewModel", "After With Context")
+    }
 
 }

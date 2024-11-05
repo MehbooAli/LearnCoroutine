@@ -8,9 +8,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.learncoroutine.Data.Api.RetrofitInstance
 import com.example.learncoroutine.Data.Model.PostModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -25,12 +29,26 @@ class SecScreenViewModel @Inject constructor() : ViewModel() {
 //            loadData1()
 //            loadData2()
 //        }
-
 //        getPosts1()
 
         viewModelScope.launch {
             getPosts1()
             getPost2()
+        }
+
+        viewModelScope.launch {
+            withContext(Dispatchers.Main) {
+                Log.d(
+                    "SecScreenViewModel",
+                    "Run blocking function: ${Thread.currentThread().name}"
+                )
+                delay(5000)
+
+                Log.d(
+                    "SecScreenViewModel",
+                    "Run blocking init state function. ${Thread.currentThread().name}"
+                )
+            }
         }
 
     }
@@ -150,4 +168,15 @@ class SecScreenViewModel @Inject constructor() : ViewModel() {
         Log.d("SecScreenViewModel", "Updated Posts in UI: ${posts1.value}")
     }
 
+    // This way we can run api on io thread to main thread
+
+//    suspend fun testFun() {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val ans = doNetworkCall(
+//                withContext(Dispatchers.Main) {
+//                    tvdummy.text = answer
+//                }
+//            )
+//        }
+//    }
 }

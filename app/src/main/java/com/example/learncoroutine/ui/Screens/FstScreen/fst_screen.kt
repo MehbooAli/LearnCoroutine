@@ -44,6 +44,21 @@ fun fst_screen(navController: NavController) {
 
             Text(text = viewmodelfstScreen.fstString.value)
             Text(text = viewmodelfstScreen.secString.value)
+            Button(onClick = { viewmodelfstScreen.doActionLongRunningTaskFst() }) {
+                Text("Execute Long Running Task")
+            }
+
+            Button(onClick = { viewmodelfstScreen.doActionLongRunningTaskSec() }) {
+                Text("Execute Long Running Task Second")
+            }
+
+            Text("In simple work explain Coroutine Scope - (lifecycle) \n Coroutine Context - (Threads)")
+            Text("Jo Scope hota hy vo hmary coroutine ka lifecycle define krta hy")
+            Text("Aur jo context hota hy vo hmen ya btata hy ky kon sy thread pr hmara coroutine run ho ja.")
+
+            Button(onClick = { viewmodelfstScreen.runBlockFun() }) {
+                Text("Run Blocking Function")
+            }
         }
     }
 
